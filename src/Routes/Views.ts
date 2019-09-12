@@ -29,18 +29,16 @@ router.get("/setup", async (req, res) => {
 
 // TODO: should be done on client side
 router.post("/mythx/login", async (req, res) => {
-    const address = req.body.address;
-    const password = req.body.password;
-    const client = new armlet.Client({
-        ethAddress: address,
-        password,
-    });
-    await client.login();
+    const accessToken = req.body.jwt.access;
+    const refreshToken = req.body.jwt.refresh;
+    if (!accessToken || !refreshToken) {
+        logger.error("Wrong request");
+    }
     const user = await User.findOne({ where: { id: req.githubUser.id.toString() }});
     user ?
-        await user.update({ accessToken: client.accessToken, refreshToken: client.refreshToken })
+        await user.update({ accessToken, refreshToken })
         : await User.create(
-            { id: req.githubUser.id.toString(), accessToken: client.accessToken, refreshToken: client.refreshToken },
+            { id: req.githubUser.id.toString(), accessToken, refreshToken },
             );
     res.redirect("/setup");
 });
@@ -53,12 +51,12 @@ router.get("/oauth/github", async (req, res) => {
 
 router.get("/github/check/status/:checkRunId", async (req, res) => {
     const reports = await CheckRunReport.all({ where: {checkRunId: req.params.checkRunId}});
-    const analysis = reports.map((report) => {
+    const analysis = await reports.map(async (report) => {
         return JSON.parse(report.report);
     });
-    console.log(analysis);
     res.render("status", {
         analysis,
+        setupUrl: config.app.hostname + "/setup",
     });
 });
 

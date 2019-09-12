@@ -1,17 +1,34 @@
 extends Layout/main
 
 block content
-    div.row(style="margin-top: 90px;")
+    article(class='markdown-body')
         h1 MythX Security Report
-
-    each report in analysis
-        div.row
-            if !report.success
-                p.bg-danger #{report.message}
-            else
-                h3 #{report.contractFilePath} Issues
-                div.row
-                    table.table.table-bordered
+        h4
+            a(href=setupUrl) Refresh token
+        each report in analysis
+            div.row
+                if  !report.success
+                    h3 #{report.contractFilePath}
+                    p.bg-danger #{report.message}
+                    if report.compileErrors
+                        h4 Compile errors
+                        table
+                            tr
+                                th Message
+                                th Severity
+                                th Reason
+                            each err in report.compileErrors
+                                tr
+                                    td #{err.message}
+                                    td
+                                        span.bg-danger #{err.severity}
+                                    td
+                                        pre(lang="no-highlight")
+                                            code #{err.formattedMessage}
+                else
+                    h3 #{report.contractFilePath}
+                    h4 Security Issues
+                    table
                         tr
                             th swcID
                             th swcTitle
@@ -19,9 +36,9 @@ block content
                             th Location
                             th Description
                         each issue in report.issues
-                            tr(class=severity.getSeverityClass(issue.severity))
-                                td #{issue.swcID}
-                                td #{issue.swcTitle}
-                                td #{issue.severity}
-                                td #{issue.location}
-                                td #{issue.description}
+                            tr
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.swcID}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.swcTitle}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.severity}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.location}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.description}
