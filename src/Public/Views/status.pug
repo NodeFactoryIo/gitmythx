@@ -5,9 +5,11 @@ block content
         span(class='refresh-url')
             a(href=setupUrl) Refresh token
         h1(class='main-title') MythX Security Report
+        h6 Below you can find analysis for #{analysis.length} contracts defined in configuration. Contract analysis is performed using Mythx service.
         each report in analysis
+            hr
             if  !report.success
-                h3 #{report.contractFilePath}
+                h3 #{report.contractFilePath.split(".")[0]}
                 p.bg-danger #{report.message}
                 if report.compileErrors
                     h4 Compile errors
@@ -25,7 +27,7 @@ block content
                                     pre(lang="no-highlight")
                                         code #{err.formattedMessage}
             else
-                h3 #{report.contractFilePath}
+                h3 #{report.contractFilePath.split(".")[0]}
                 h4 Security Issues
                 table
                     tr

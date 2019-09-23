@@ -34,11 +34,17 @@ router.post("/mythx/login", async (req, res) => {
         logger.error("Wrong request");
     }
     const user = await User.findOne({ where: { id: req.githubUser.id.toString() }});
-    user ?
-        await user.update({ accessToken, refreshToken })
-        : await User.create(
+    try {
+        user ?
+            await user.update({ accessToken, refreshToken })
+            : await User.create(
             { id: req.githubUser.id.toString(), accessToken, refreshToken },
             );
+    } catch (e) {
+        logger.error(e);
+        return res.status(500).end();
+    }
+    return res.status(200).end();
 });
 
 router.get("/oauth/github", async (req, res) => {
