@@ -185,8 +185,6 @@ export class Analysis {
             client.accessToken = mythxUser.accessToken;
             client.refreshToken = mythxUser.refreshToken;
             logger.info("Submitting contracts to mythx analysis");
-            logger.info("ACCESS-BEFORE:" + client.accessToken);
-            logger.info("REFRESH-BEFORE:" + client.refreshToken);
             let result;
             try {
                 result = await client.analyzeWithStatus({
@@ -204,8 +202,6 @@ export class Analysis {
                 mythxUser.accessToken = client.accessToken;
                 mythxUser.refreshToken = client.refreshToken;
                 await mythxUser.save();
-                logger.info("ACCESS-AFTER:" + client.accessToken);
-                logger.info("REFRESH-AFTER:" + client.refreshToken);
             }
             // await User.upsert(mythxUser);
             /* Add `solidity_file_path` to display the result in the ESLint format with the provided input path */

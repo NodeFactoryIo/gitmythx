@@ -32,10 +32,6 @@ const config = Object.freeze({
             privateKeyLocation: process.env.GITHUB_PRIVATE_KEY_LOCATION,
         },
     },
-    mythx: {
-        acc: process.env.MYTHX_ACC,
-        pass: process.env.MYTHX_PASS,
-    },
     env: process.env.NODE_ENV || "dev",
     port: env.SERVER_PORT || 3000,
 });
