@@ -53,7 +53,8 @@ export class AnalysisReport {
                     location: "undefined",
                     severity: issue.severity,
                 } as IMythxIssue;
-                const source = mythxRequest.sources[this.contractFilePath].content;
+                const source = mythxRequest
+                    .sources[(this.contractFilePath.split(".").slice(0, -1)).join(".")].content;
                 if (source) {
                     const lineBreakPositions = this.decoder.getLinebreakPositions(source);
                     let startLineCol;

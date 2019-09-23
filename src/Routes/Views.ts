@@ -27,7 +27,6 @@ router.get("/setup", async (req, res) => {
     });
 });
 
-// TODO: should be done on client side
 router.post("/mythx/login", async (req, res) => {
     const accessToken = req.body.jwt.access;
     const refreshToken = req.body.jwt.refresh;
@@ -40,7 +39,6 @@ router.post("/mythx/login", async (req, res) => {
         : await User.create(
             { id: req.githubUser.id.toString(), accessToken, refreshToken },
             );
-    res.redirect("/setup");
 });
 
 router.get("/oauth/github", async (req, res) => {
@@ -51,7 +49,7 @@ router.get("/oauth/github", async (req, res) => {
 
 router.get("/github/check/status/:checkRunId", async (req, res) => {
     const reports = await CheckRunReport.all({ where: {checkRunId: req.params.checkRunId}});
-    const analysis = await reports.map(async (report) => {
+    const analysis = reports.map((report) => {
         return JSON.parse(report.report);
     });
     res.render("status", {

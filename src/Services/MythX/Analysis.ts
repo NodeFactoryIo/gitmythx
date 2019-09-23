@@ -87,7 +87,7 @@ export class Analysis {
                 logger.error(e);
                 return new AnalysisReport(
                     false,
-                    "Invalid solc version",
+                    "Invalid solc version in configuration file.",
                     null,
                     null,
                     {mainSource: contractFileName},
@@ -101,7 +101,7 @@ export class Analysis {
                 }
                 return new AnalysisReport(
                     false,
-                    "Failed to compile contracts",
+                    "Failed to compile contracts.",
                     null,
                     null,
                     { mainSource: contractFileName, compileErrors: compiled.errors },
@@ -165,12 +165,12 @@ export class Analysis {
                 mythxSourceList,
                 analysisMode: "quick",
                 sources: {},
-                mainSource: contractFileName,
+                mainSource: `${contractFileName}.sol`,
             } as any;
 
             // tslint:disable-next-line:forin
             for (const key in solcInput.sources) {
-                data.sources[key] = { source: solcInput.sources[key].content };
+                data.sources[`${key}.sol`] = { source: solcInput.sources[key].content };
             }
             logger.info(`Fetching mythx credentials for user ${this.repo.getOwner()}`);
             const mythxUser = await User.findOne({ where: { id: this.repo.getOwner() }});

@@ -2,43 +2,42 @@ extends Layout/main
 
 block content
     article(class='markdown-body')
-        h1 MythX Security Report
-        h4
+        span(class='refresh-url')
             a(href=setupUrl) Refresh token
+        h1(class='main-title') MythX Security Report
         each report in analysis
-            div.row
-                if  !report.success
-                    h3 #{report.contractFilePath}
-                    p.bg-danger #{report.message}
-                    if report.compileErrors
-                        h4 Compile errors
-                        table
-                            tr
-                                th Message
-                                th Severity
-                                th Reason
-                            each err in report.compileErrors
-                                tr
-                                    td #{err.message}
-                                    td
-                                        span.bg-danger #{err.severity}
-                                    td
-                                        pre(lang="no-highlight")
-                                            code #{err.formattedMessage}
-                else
-                    h3 #{report.contractFilePath}
-                    h4 Security Issues
+            if  !report.success
+                h3 #{report.contractFilePath}
+                p.bg-danger #{report.message}
+                if report.compileErrors
+                    h4 Compile errors
                     table
                         tr
-                            th swcID
-                            th swcTitle
+                            th Message
                             th Severity
-                            th Location
-                            th Description
-                        each issue in report.issues
+                            th Reason
+                        each err in report.compileErrors
                             tr
-                                td(class=severity.getSeverityClass(issue.severity)) #{issue.swcID}
-                                td(class=severity.getSeverityClass(issue.severity)) #{issue.swcTitle}
-                                td(class=severity.getSeverityClass(issue.severity)) #{issue.severity}
-                                td(class=severity.getSeverityClass(issue.severity)) #{issue.location}
-                                td(class=severity.getSeverityClass(issue.severity)) #{issue.description}
+                                td #{err.message}
+                                td
+                                    span.bg-danger #{err.severity}
+                                td
+                                    pre(lang="no-highlight")
+                                        code #{err.formattedMessage}
+            else
+                h3 #{report.contractFilePath}
+                h4 Security Issues
+                table
+                    tr
+                        th swcID
+                        th swcTitle
+                        th Severity
+                        th Location
+                        th Description
+                    each issue in report.issues
+                        tr
+                            td(class=severity.getSeverityClass(issue.severity)) #{issue.swcID}
+                            td(class=severity.getSeverityClass(issue.severity)) #{issue.swcTitle}
+                            td(class=severity.getSeverityClass(issue.severity)) #{issue.severity}
+                            td(class=severity.getSeverityClass(issue.severity)) #{issue.location}
+                            td(class=severity.getSeverityClass(issue.severity)) #{issue.description}
