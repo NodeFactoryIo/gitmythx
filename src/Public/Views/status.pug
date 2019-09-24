@@ -28,18 +28,21 @@ block content
                                         code #{err.formattedMessage}
             else
                 h3 #{report.contractFilePath.split(".")[0]}
-                h4 Security Issues
-                table
-                    tr
-                        th swcID
-                        th swcTitle
-                        th Severity
-                        th Location
-                        th Description
-                    each issue in report.issues
+                if report.issues.length === 0
+                    p ✔ Security check succesfull
+                else
+                    h4 Security Issues
+                    table
                         tr
-                            td(class=severity.getSeverityClass(issue.severity)) #{issue.swcID}
-                            td(class=severity.getSeverityClass(issue.severity)) #{issue.swcTitle}
-                            td(class=severity.getSeverityClass(issue.severity)) #{issue.severity}
-                            td(class=severity.getSeverityClass(issue.severity)) #{issue.location}
-                            td(class=severity.getSeverityClass(issue.severity)) #{issue.description}
+                            th swcID
+                            th swcTitle
+                            th Severity
+                            th Location
+                            th Description
+                        each issue in report.issues
+                            tr
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.swcID}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.swcTitle}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.severity}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.location}
+                                td(class=severity.getSeverityClass(issue.severity)) #{issue.description}

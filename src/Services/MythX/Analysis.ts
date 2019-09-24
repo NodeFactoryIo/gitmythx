@@ -38,7 +38,7 @@ export class Analysis {
             if (contractSource === null) {
                 return new AnalysisReport(
                     false,
-                    contractFileName + " file defined in mythx configuration is missing.",
+                    `✖ ${contractFileName} file defined in mythx configuration is missing.`,
                     null,
                     null,
                     { mainSource: contractFileName },
@@ -87,7 +87,7 @@ export class Analysis {
                 logger.error(e);
                 return new AnalysisReport(
                     false,
-                    "Invalid solc version in configuration file.",
+                    "✖ Invalid solc version in configuration file.",
                     null,
                     null,
                     {mainSource: contractFileName},
@@ -101,7 +101,7 @@ export class Analysis {
                 }
                 return new AnalysisReport(
                     false,
-                    "Failed to compile contracts.",
+                    "✖ Failed to compile contracts.",
                     null,
                     null,
                     { mainSource: contractFileName, compileErrors: compiled.errors },
@@ -117,6 +117,9 @@ export class Analysis {
                 return new AnalysisReport(
                     false,
                     "✖ No contracts found",
+                    null,
+                    null,
+                    {mainSource: contractFileName},
                 );
             } else if (inputfile.length === 1) {
                 contractName = Object.keys(inputfile)[0];
@@ -151,7 +154,11 @@ export class Analysis {
                 return new AnalysisReport(
                     false,
                     "✖ Compiling the Solidity code did not return any bytecode." +
-                    " Note that abstract contracts cannot be analyzed.");
+                    " Note that abstract contracts cannot be analyzed.",
+                    null,
+                    null,
+                    {mainSource: contractFileName},
+                );
             }
 
             /* Format data for MythX API */
