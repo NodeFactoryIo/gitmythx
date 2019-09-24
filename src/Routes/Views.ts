@@ -1,4 +1,3 @@
-import * as armlet from "armlet";
 import * as express from "express";
 import config from "../Config/Config";
 import CheckRunReport from "../Models/CheckRunReport";
@@ -32,7 +31,8 @@ router.post("/mythx/login", async (req, res) => {
     const accessToken = req.body.jwt.access;
     const refreshToken = req.body.jwt.refresh;
     if (!accessToken || !refreshToken) {
-        logger.error("Wrong request");
+        logger.error("JWT tokens not provided in request.");
+        res.status(400).end();
     }
     const user = await User.findOne({ where: { id: req.githubUser.id.toString() }});
     try {
