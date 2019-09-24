@@ -8,7 +8,7 @@ import logger from "../Services/Logger";
 
 const router = express.Router();
 
-router.get("/setup", async (req, res) => {
+router.get("/setup/:checkRunId*?", async (req, res) => {
     if (!req.githubUser) {
         return res.redirect(
             `https://github.com/login/oauth/authorize?client_id=${config.github.client.id}`,
@@ -24,6 +24,7 @@ router.get("/setup", async (req, res) => {
     res.render("setup", {
         githubUser: req.githubUser,
         mythxUser,
+        checkRunUrl: req.params.checkRunId ? `/github/check/status/${req.params.checkRunId}` : "",
     });
 });
 
@@ -60,7 +61,7 @@ router.get("/github/check/status/:checkRunId", async (req, res) => {
     });
     res.render("status", {
         analysis,
-        setupUrl: config.app.hostname + "/setup",
+        setupUrl: `${config.app.hostname}/setup/${req.params.checkRunId}`,
     });
 });
 
