@@ -34,6 +34,16 @@ export class Analysis {
     private async runAnalyses(contractFilePath: string, contractSource: string): Promise<AnalysisReport> {
         try {
             const contractFileName = path.basename(contractFilePath);
+            // contract file is missing
+            if (contractSource === null) {
+                return new AnalysisReport(
+                    false,
+                    `✖ ${contractFileName} file defined in mythx configuration is missing.`,
+                    null,
+                    null,
+                    { mainSource: contractFileName },
+                );
+            }
             const solcInput = {
                 language: "Solidity",
                 sources: {
@@ -70,7 +80,19 @@ export class Analysis {
             };
             const mythxSourceList = Object.keys(sourceList);
             mythxSourceList.push(contractFileName);
-            const compiled =  await SolidityUtils.compile(solcInput, this.config.solidityVersion);
+            let compiled;
+            try {
+                compiled = await SolidityUtils.compile(solcInput, this.config.solidityVersion);
+            } catch (e) {
+                logger.error(e);
+                return new AnalysisReport(
+                    false,
+                    "✖ Invalid solc version in configuration file.",
+                    null,
+                    null,
+                    {mainSource: contractFileName},
+                );
+            }
             if (!compiled.contracts || !Object.keys(compiled.contracts).length) {
                 if (compiled.errors) {
                     for (const compiledError of compiled.errors) {
@@ -79,7 +101,10 @@ export class Analysis {
                 }
                 return new AnalysisReport(
                     false,
-                    "Failed to compšile contracts",
+                    "✖ Failed to compile contracts.",
+                    null,
+                    null,
+                    { mainSource: contractFileName, compileErrors: compiled.errors },
                 );
             }
 
@@ -92,6 +117,9 @@ export class Analysis {
                 return new AnalysisReport(
                     false,
                     "✖ No contracts found",
+                    null,
+                    null,
+                    {mainSource: contractFileName},
                 );
             } else if (inputfile.length === 1) {
                 contractName = Object.keys(inputfile)[0];
@@ -126,7 +154,11 @@ export class Analysis {
                 return new AnalysisReport(
                     false,
                     "✖ Compiling the Solidity code did not return any bytecode." +
-                    " Note that abstract contracts cannot be analyzed.");
+                    " Note that abstract contracts cannot be analyzed.",
+                    null,
+                    null,
+                    {mainSource: contractFileName},
+                );
             }
 
             /* Format data for MythX API */
@@ -140,12 +172,12 @@ export class Analysis {
                 mythxSourceList,
                 analysisMode: "quick",
                 sources: {},
-                mainSource: contractFileName,
+                mainSource: `${contractFileName}.sol`,
             } as any;
 
             // tslint:disable-next-line:forin
             for (const key in solcInput.sources) {
-                data.sources[key] = { source: solcInput.sources[key].content };
+                data.sources[`${key}.sol`] = { source: solcInput.sources[key].content };
             }
             logger.info(`Fetching mythx credentials for user ${this.repo.getOwner()}`);
             const mythxUser = await User.findOne({ where: { id: this.repo.getOwner() }});
@@ -160,12 +192,25 @@ export class Analysis {
             client.accessToken = mythxUser.accessToken;
             client.refreshToken = mythxUser.refreshToken;
             logger.info("Submitting contracts to mythx analysis");
-            const result = await client.analyzeWithStatus({
-                data,
-                timeout: 300000,
-                clientToolName: "GitMythX",
-            });
-
+            let result;
+            try {
+                result = await client.analyzeWithStatus({
+                    data,
+                    timeout: 300000,
+                    clientToolName: "GitMythX",
+                });
+            } catch (e) {
+                logger.error(e.message ? e.message : e);
+                return new AnalysisReport(
+                    false,
+                    e.message ? e.message : e,
+                );
+            } finally {
+                mythxUser.accessToken = client.accessToken;
+                mythxUser.refreshToken = client.refreshToken;
+                await mythxUser.save();
+            }
+            // await User.upsert(mythxUser);
             /* Add `solidity_file_path` to display the result in the ESLint format with the provided input path */
             data.filePath = contractFilePath;
 

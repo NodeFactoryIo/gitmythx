@@ -9,13 +9,17 @@ export class AnalysisReport {
 
     public readonly contractFilePath: string;
 
+    public readonly compileErrors: any[];
+
     private decoder: SourceMappingDecoder;
 
     constructor(
         public readonly success: boolean,
         public readonly message: string,
         mythxRequest?: any,
-        mythxResult?: any) {
+        mythxResult?: any,
+        failedReport?: any,
+    ) {
         this.decoder = new SourceMappingDecoder();
         if (mythxResult && mythxRequest) {
             this.contractFilePath = mythxRequest.mainSource;
@@ -23,6 +27,10 @@ export class AnalysisReport {
             this.issues = mythxResult.issues
                 .map((issue) => this.convertMythxIssue(issue, mythxRequest))
                 .reduce((curr, arr) => curr.concat(arr), []);
+        } else if (failedReport) {
+            // missing contract files
+            this.contractFilePath = failedReport.mainSource;
+            this.compileErrors = failedReport.compileErrors;
         }
     }
 
@@ -45,7 +53,8 @@ export class AnalysisReport {
                     location: "undefined",
                     severity: issue.severity,
                 } as IMythxIssue;
-                const source = mythxRequest.sources[this.contractFilePath].content;
+                const source = mythxRequest
+                    .sources[(this.contractFilePath.split(".").slice(0, -1)).join(".")].content;
                 if (source) {
                     const lineBreakPositions = this.decoder.getLinebreakPositions(source);
                     let startLineCol;
