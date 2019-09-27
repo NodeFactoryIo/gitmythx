@@ -151,7 +151,12 @@ export class Analysis {
             const mythxUser = await User.findOne({ where: { id: this.repo.getOwner() }});
             if (!mythxUser) {
                 logger.error(`Missing mythx credentials for user ${this.repo.getOwner()}`);
-                return new AnalysisReport(false, `Missing mythx credentials for user ${this.repo.getOwner()}`);
+                return new AnalysisReport(
+                    false,
+                    `Missing mythx credentials for user ${this.repo.getOwner()}`,
+                    null,
+                    null,
+                    {mainSource: contractFileName, missingCredentials: true});
             }
             const client = new armlet.Client({
                 ethAddress: "0x",
