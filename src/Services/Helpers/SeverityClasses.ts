@@ -1,9 +1,9 @@
 
 function getSeverityClass(severity) {
     switch (severity) {
-        case "Low": return "info";
-        case "Medium": return "warning";
-        case "High": return "danger";
+        case "Low": return "bg-info";
+        case "Medium": return "bg-warning";
+        case "High": return "bg-danger";
     }
 }
 

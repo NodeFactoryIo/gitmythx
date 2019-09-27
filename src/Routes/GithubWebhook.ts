@@ -1,6 +1,6 @@
 import * as express from "express";
-import githubMiddleware from "../Services/Github/GithubWebhookMiddleware";
 import GithubHookController from "../Controller/Hooks/GithubHookController";
+import githubMiddleware from "../Services/Github/GithubWebhookMiddleware";
 
 const router = express.Router();
 
