@@ -38,7 +38,7 @@ export class Analysis {
             if (contractSource === null) {
                 return new AnalysisReport(
                     false,
-                    `✖ ${contractFileName} file defined in mythx configuration is missing.`,
+                    `✖ ${contractFileName} file defined in MythX configuration is missing.`,
                     null,
                     null,
                     { mainSource: contractFileName },

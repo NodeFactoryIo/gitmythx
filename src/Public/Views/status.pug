@@ -3,12 +3,12 @@ extends Layout/main
 block content
     article(class='markdown-body')
         span(class='refresh-url')
-            a(href=setupUrl) Refresh token
+            a(href=setupUrl) MythX login
         h1(class='main-title') MythX Security Report
         if missingCredentials
-            h6 Missing Mythx credentials, please login with Mythx account.
+            h6 Missing MythX credentials, please login with your MythX account.
         else
-            h6 Below you can find analysis for #{analysis.length} contracts defined in configuration. Contract analysis is performed using Mythx service.
+            h6 Below you can find analysis for #{analysis.length} contracts defined in configuration. Contract analysis is performed using MythX service.
             each report in analysis
                 hr
                 if  !report.success
@@ -32,7 +32,7 @@ block content
                 else
                     h3 #{report.contractFilePath.split(".")[0]}
                     if report.issues.length === 0
-                        p ✔ Security check succesfull
+                        p ✔ Security check successful
                     else
                         h4 Security Issues
                         table
