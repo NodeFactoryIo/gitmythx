@@ -58,7 +58,9 @@ export class GitRepo {
     private deleteDirectory(dir: string): void {
         try {
             rimraf.sync(dir);
-        } catch (ignored) {}
+        } catch (ignored) {
+            //
+        }
     }
 
 }

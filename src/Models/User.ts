@@ -2,7 +2,7 @@ import {Column, CreatedAt, DataType, Model, PrimaryKey, Table, UpdatedAt} from "
 
 @Table({
     timestamps: true,
-    tableName: "Users"
+    tableName: "Users",
 })
 export default class User extends Model<User> {
 
